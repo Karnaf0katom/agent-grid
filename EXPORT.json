@@ -2,8 +2,8 @@
   "files": [
     {
       "path": ".github/workflows/check.yml",
-      "bytes": 1781,
-      "sha256": "596a11a321411f89c3f0a364c4f09f9576cde00140e89541c89f1125f6a0f82c"
+      "bytes": 2149,
+      "sha256": "e4375d8f7f9cf2ecbcc95316b44958cc6d6bff148d8b1c6c9e529caa5cba45ff"
     },
     {
       "path": ".gitignore",
@@ -27,8 +27,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 4457,
-      "sha256": "6672f4ede74225b3b50907da89a6b53aeb6d7569e228c32a44f9682356ada24d"
+      "bytes": 4582,
+      "sha256": "63e5dae9d012c569db1de8d3eb44b7c499a7aad2824d1bbed8f31c5e2e9f9714"
     },
     {
       "path": "SECURITY.md",
@@ -52,8 +52,8 @@
     },
     {
       "path": "apps/agent-grid/README.md",
-      "bytes": 4411,
-      "sha256": "efb0c6b4cfd3633ab2be3a25eb78a43eb2e41b5b28bba4f555172b3c0113f684"
+      "bytes": 4536,
+      "sha256": "1a12a92b5ecd0c6db6667d1358d21baa5c71bd6efdce846e7fb9753851fcb5ca"
     },
     {
       "path": "apps/agent-grid/UI-PLACEMENT.yaml",
@@ -72,8 +72,8 @@
     },
     {
       "path": "apps/agent-grid/distribution/check.yml",
-      "bytes": 1781,
-      "sha256": "596a11a321411f89c3f0a364c4f09f9576cde00140e89541c89f1125f6a0f82c"
+      "bytes": 2149,
+      "sha256": "e4375d8f7f9cf2ecbcc95316b44958cc6d6bff148d8b1c6c9e529caa5cba45ff"
     },
     {
       "path": "apps/agent-grid/distribution/export-manifest.json",
@@ -112,8 +112,8 @@
     },
     {
       "path": "apps/agent-grid/docs/research.md",
-      "bytes": 2963,
-      "sha256": "08153be32eef9ebcc019d137858bd027744a4a07af87b6708aad65c7cc648817"
+      "bytes": 3013,
+      "sha256": "61729ec43ef6bc948694d63f7c397b3cabd96429b2ddcc3f4dd592309db0d3a8"
     },
     {
       "path": "apps/agent-grid/docs/security.md",
@@ -157,8 +157,8 @@
     },
     {
       "path": "apps/agent-grid/tests/browser-smoke.js",
-      "bytes": 7842,
-      "sha256": "5c858fc40e709998a4498810e3f2d4d516c389a5f0427821f4303e240f7bbb6d"
+      "bytes": 8437,
+      "sha256": "31ef22a301f6f1c637eda322ae684b8f2ff29b9b43a2b3e6bb0d86903f08da16"
     },
     {
       "path": "apps/agent-grid/tests/server.test.js",
@@ -232,8 +232,8 @@
     },
     {
       "path": "packages/agent-grid/src/styles.js",
-      "bytes": 5006,
-      "sha256": "42c137932b0ad68ce4e0e1e86957c883d5ffab879b4f56ed870e6625dff0ca37"
+      "bytes": 5170,
+      "sha256": "3c5086a301852a7178ffc6d3a8c76984b8acae8f5da45ed040172130fd5d1d7f"
     },
     {
       "path": "packages/agent-grid/tests/core.test.js",

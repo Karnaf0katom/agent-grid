@@ -18,7 +18,7 @@ Decision: limit concurrent snapshot reads, keep output nodes stable, preserve us
 
 ## YouTube review status
 
-The requested footage review is tracked separately from the verified documentation findings. Selected sources are [this BridgeMind demo](https://www.youtube.com/watch?v=K-AzrvFeNTQ) and the [officially linked recent stream](https://www.youtube.com/watch?v=EvCMaE94p1g). YouTube page retrieval was unavailable in this environment, the local downloader entry point had a missing module, and the existing video-watcher command was not admitted by the host's compute gate. No video-specific observations or claims are asserted here.
+The requested footage review is tracked separately from the verified documentation findings. Selected sources are [this BridgeMind demo](https://www.youtube.com/watch?v=K-AzrvFeNTQ) and the [officially linked recent stream](https://www.youtube.com/watch?v=EvCMaE94p1g). YouTube page retrieval was unavailable. The existing video watcher failed at its downloader; an available downloader then reached YouTube's sign-in/bot challenge. No video-specific observations or claims are asserted here. Revisit footage analysis when an accessible source or authorized access is available.
 
 ## CCC evidence
 

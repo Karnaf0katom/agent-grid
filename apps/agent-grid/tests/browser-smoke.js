@@ -14,6 +14,16 @@ const grid = page.locator('agent-grid');
 const tiles = () => grid.locator('.tile:visible');
 const ids = () => tiles().evaluateAll(elements => elements.map(element => element.dataset.sessionId));
 const waitCount = async count => { await page.waitForFunction(expected => [...document.querySelector('agent-grid').shadowRoot.querySelectorAll('.tile')].filter(tile => !tile.hidden).length === expected, count); };
+const checkPaneControls = async () => {
+  const clipped = await tiles().evaluateAll(elements => elements.flatMap(tile => {
+    const bottom = tile.getBoundingClientRect().bottom;
+    return ['.composer', '.tile-footer'].flatMap(selector => {
+      const control = tile.querySelector(selector);
+      return !control.hidden && control.getBoundingClientRect().bottom > bottom + 1 ? [`${tile.dataset.sessionId}: ${selector}`] : [];
+    });
+  }));
+  assert.deepEqual(clipped, [], 'All visible pane controls must fit inside their pane.');
+};
 
 try {
   await page.goto(origin);
@@ -81,11 +91,13 @@ try {
   await grid.getByRole('button', { name: 'Include idle and stopped sessions', exact: true }).click();
   await waitCount(5);
   await grid.getByRole('button', { name: 'Reset pane order and sizes for this workspace', exact: true }).click();
+  await checkPaneControls();
   await mkdir('artifacts', { recursive: true });
   await page.screenshot({ path: 'artifacts/agent-grid-desktop.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForFunction(() => document.querySelector('agent-grid')._columns === 1);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
+  await checkPaneControls();
   await page.screenshot({ path: 'artifacts/agent-grid-mobile.png', fullPage: true });
 
   // A host-supplied renderer mounts once and cleans up when the element is removed.

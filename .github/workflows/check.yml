@@ -2,6 +2,17 @@ name: Check
 on:
   push:
     branches: [main]
+    paths:
+      - 'packages/agent-grid/src/**'
+      - 'packages/agent-grid/tests/**'
+      - 'packages/agent-grid/package.json'
+      - 'apps/agent-grid/server.js'
+      - 'apps/agent-grid/adapters/**'
+      - 'apps/agent-grid/public/**'
+      - 'apps/agent-grid/tests/**'
+      - 'apps/agent-grid/package.json'
+      - 'package.json'
+      - '.github/workflows/**'
   pull_request:
   workflow_dispatch:
 permissions:

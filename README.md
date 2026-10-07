@@ -36,7 +36,13 @@ The server binds to loopback, validates the request origin, and enforces permiss
 
 ## Embed the grid
 
-Install the SDK archive attached to the GitHub release, or install the library from a local clone:
+Install the SDK archive attached to the GitHub release:
+
+```sh
+npm install https://github.com/Karnaf0katom/agent-grid/releases/download/v0.1.0/karnafkatom-agent-grid-0.1.0.tgz
+```
+
+Or install the library from a local clone:
 
 ```sh
 npm install ./packages/agent-grid

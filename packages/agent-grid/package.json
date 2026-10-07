@@ -1,0 +1,17 @@
+{
+  "name": "@karnafkatom/agent-grid",
+  "version": "0.1.0",
+  "description": "A framework-neutral, host-controlled grid for agent sessions.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Karnaf Katom (Karnaf0katom)",
+  "repository": { "type": "git", "url": "https://github.com/Karnaf0katom/agent-grid.git", "directory": "packages/agent-grid" },
+  "homepage": "https://github.com/Karnaf0katom/agent-grid",
+  "exports": {
+    ".": { "types": "./src/index.d.ts", "default": "./src/index.js" },
+    "./element": { "types": "./src/element.d.ts", "default": "./src/element.js" }
+  },
+  "files": ["src", "LICENSE", "NOTICE", "THIRD_PARTY_NOTICES.md"],
+  "engines": { "node": ">=20" },
+  "keywords": ["agents", "grid", "web-component", "terminal", "dashboard", "ccc"]
+}

@@ -1,0 +1,244 @@
+{
+  "files": [
+    {
+      "path": ".github/workflows/check.yml",
+      "bytes": 1781,
+      "sha256": "596a11a321411f89c3f0a364c4f09f9576cde00140e89541c89f1125f6a0f82c"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 89,
+      "sha256": "c9e262c2dc619c44874e8d8f8c464a14726dd3330bc72c346130564d443f3acc"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "bytes": 1174,
+      "sha256": "f9592d1d05afbf1a669a4a640e4e29101ff557cfb8017a2ac62219bbb29cb1d7"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "NOTICE",
+      "bytes": 396,
+      "sha256": "cccb41092530ed5e7d268a67fcea62ef8e2c0ed9053b01965ea87fe593db61b8"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4457,
+      "sha256": "6672f4ede74225b3b50907da89a6b53aeb6d7569e228c32a44f9682356ada24d"
+    },
+    {
+      "path": "SECURITY.md",
+      "bytes": 955,
+      "sha256": "eb365763af38b71411b6c538f585cc14d8b2e627a946f598b70801d2dd814964"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 1657,
+      "sha256": "6f1e02b9f629d9c9d48f45f6df260ecc58da52e810880ba1d5021049f8e7576f"
+    },
+    {
+      "path": "apps/agent-grid/.gitignore",
+      "bytes": 30,
+      "sha256": "ceb09ecb4232c8795639e766393bc60e494914018047973217195d698f8ef9a9"
+    },
+    {
+      "path": "apps/agent-grid/MAP.yaml",
+      "bytes": 540,
+      "sha256": "ec2a9d926458ed37272fe5aef8dbce5c9834ff0b6a9b43725e743ba1a91c5ab9"
+    },
+    {
+      "path": "apps/agent-grid/README.md",
+      "bytes": 4411,
+      "sha256": "efb0c6b4cfd3633ab2be3a25eb78a43eb2e41b5b28bba4f555172b3c0113f684"
+    },
+    {
+      "path": "apps/agent-grid/UI-PLACEMENT.yaml",
+      "bytes": 789,
+      "sha256": "529e3307357eebe8b364aa6099c85b58a0bef9292af2ebc10e6d136491c729dc"
+    },
+    {
+      "path": "apps/agent-grid/adapters/demo.js",
+      "bytes": 3247,
+      "sha256": "fa3b49b198a0cf224a9f5f861ef1d95d9ce96afdbeecea156929df05255fbdaa"
+    },
+    {
+      "path": "apps/agent-grid/adapters/tmux.js",
+      "bytes": 5827,
+      "sha256": "a16eb7f91f2760162f3260692554eadf6427db590edc8465eb588918b95456d2"
+    },
+    {
+      "path": "apps/agent-grid/distribution/check.yml",
+      "bytes": 1781,
+      "sha256": "596a11a321411f89c3f0a364c4f09f9576cde00140e89541c89f1125f6a0f82c"
+    },
+    {
+      "path": "apps/agent-grid/distribution/export-manifest.json",
+      "bytes": 5664,
+      "sha256": "ce2d8f68d6b5fbc622c5fd4fbb0fbf3ac408fcd8ad1afc625b4eb92f9df2132c"
+    },
+    {
+      "path": "apps/agent-grid/distribution/gitignore",
+      "bytes": 89,
+      "sha256": "c9e262c2dc619c44874e8d8f8c464a14726dd3330bc72c346130564d443f3acc"
+    },
+    {
+      "path": "apps/agent-grid/distribution/package.json",
+      "bytes": 588,
+      "sha256": "fb4077f9a30620a568793407b01c16e4e1b3e2a6e2015866c5d1b66458c887b4"
+    },
+    {
+      "path": "apps/agent-grid/docs/ccc-adoption.md",
+      "bytes": 2934,
+      "sha256": "e7f87afea6a91aac3d3e0cef49113ada399b3a290bd5f47ce26beed34cdece03"
+    },
+    {
+      "path": "apps/agent-grid/docs/contributing.md",
+      "bytes": 1174,
+      "sha256": "f9592d1d05afbf1a669a4a640e4e29101ff557cfb8017a2ac62219bbb29cb1d7"
+    },
+    {
+      "path": "apps/agent-grid/docs/integrating.md",
+      "bytes": 5453,
+      "sha256": "53e2c3682c68cadf1ffb12189c0771c5dbaf309c9579d16d4c6498762a958cf8"
+    },
+    {
+      "path": "apps/agent-grid/docs/licensing.md",
+      "bytes": 2330,
+      "sha256": "3c14cfdbd329588c0ddaaee0d5b1df018fe64cba41f468ff305f1e9f26636b0a"
+    },
+    {
+      "path": "apps/agent-grid/docs/research.md",
+      "bytes": 2963,
+      "sha256": "08153be32eef9ebcc019d137858bd027744a4a07af87b6708aad65c7cc648817"
+    },
+    {
+      "path": "apps/agent-grid/docs/security.md",
+      "bytes": 955,
+      "sha256": "eb365763af38b71411b6c538f585cc14d8b2e627a946f598b70801d2dd814964"
+    },
+    {
+      "path": "apps/agent-grid/docs/tmux.md",
+      "bytes": 2280,
+      "sha256": "e846a5c4bcd862240fe83b43ea1a10c9fa372d5371fc2f6f6469ce525447a3c9"
+    },
+    {
+      "path": "apps/agent-grid/package.json",
+      "bytes": 305,
+      "sha256": "2ea0c89a568a6058240e89fe9390ee2f2db42a1407fc87d8caa92c9d31967f7f"
+    },
+    {
+      "path": "apps/agent-grid/public/app.css",
+      "bytes": 2901,
+      "sha256": "15da65d03b187f84547da2dfca88b471cbbd050060d994c6bf0c7eabb0281f17"
+    },
+    {
+      "path": "apps/agent-grid/public/index.html",
+      "bytes": 2304,
+      "sha256": "12cfe163bb19780f9231dea23c4596c7fa614b521cd06d12f9c93e74adfccb96"
+    },
+    {
+      "path": "apps/agent-grid/public/main.js",
+      "bytes": 1128,
+      "sha256": "5173a85916dd56d3fd428c3bb9f35de21d88a03c12e7d7a8484692214e12a2d9"
+    },
+    {
+      "path": "apps/agent-grid/scripts/export.py",
+      "bytes": 3156,
+      "sha256": "c15d83c6c3ee7775c80e8a6b48a4522b7c8a65e5188962ff77f50f16dd0bcb46"
+    },
+    {
+      "path": "apps/agent-grid/server.js",
+      "bytes": 8940,
+      "sha256": "43b3be49e67601c4f6e2663fc865086f113de460f2ffb3fadfc6bd3048a1a566"
+    },
+    {
+      "path": "apps/agent-grid/tests/browser-smoke.js",
+      "bytes": 6380,
+      "sha256": "e76e47da9ec28d2acd6cde5461d223bc33d2a769b435cbc81657012b1f44fbd4"
+    },
+    {
+      "path": "apps/agent-grid/tests/server.test.js",
+      "bytes": 5320,
+      "sha256": "3566a99e414eb6579916bdb762de9670d2165d4820663d1a9aed115c310a943a"
+    },
+    {
+      "path": "apps/agent-grid/tests/tmux.test.js",
+      "bytes": 4728,
+      "sha256": "5caa30320573ddbfee0ade76bea4ff0a7dc0d1a0e7819906a79fe48c9786b66d"
+    },
+    {
+      "path": "package.json",
+      "bytes": 588,
+      "sha256": "fb4077f9a30620a568793407b01c16e4e1b3e2a6e2015866c5d1b66458c887b4"
+    },
+    {
+      "path": "packages/agent-grid/LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "packages/agent-grid/NOTICE",
+      "bytes": 396,
+      "sha256": "cccb41092530ed5e7d268a67fcea62ef8e2c0ed9053b01965ea87fe593db61b8"
+    },
+    {
+      "path": "packages/agent-grid/README.md",
+      "bytes": 471,
+      "sha256": "0c7731a5b6e3970b5f1f5c5d68c376a6ba6a66671318b542a3e3b427ab67eeed"
+    },
+    {
+      "path": "packages/agent-grid/THIRD_PARTY_NOTICES.md",
+      "bytes": 1657,
+      "sha256": "6f1e02b9f629d9c9d48f45f6df260ecc58da52e810880ba1d5021049f8e7576f"
+    },
+    {
+      "path": "packages/agent-grid/package.json",
+      "bytes": 778,
+      "sha256": "c9c6cd23a7ecd6cffe6d61619eefba6808ab8911ed62251f4292c590fb1697d5"
+    },
+    {
+      "path": "packages/agent-grid/src/adapters.js",
+      "bytes": 4597,
+      "sha256": "f3cc04545ff55e575f226899cc882f504b9f4c9293d11abc4e77e181cf3694fb"
+    },
+    {
+      "path": "packages/agent-grid/src/element.d.ts",
+      "bytes": 751,
+      "sha256": "9930623ca1d1d0fc61440d247c226cbeb663d7cd04ab2e29e1698eb43b33857d"
+    },
+    {
+      "path": "packages/agent-grid/src/element.js",
+      "bytes": 27828,
+      "sha256": "b79b0166582cc300e9967b91daf5253e77a72616ce4c92e91465b1b5a70d4ec6"
+    },
+    {
+      "path": "packages/agent-grid/src/index.d.ts",
+      "bytes": 2311,
+      "sha256": "2f492327b94c6665093dd43b031c394d0b4270c82c2791a050d712ead18722d1"
+    },
+    {
+      "path": "packages/agent-grid/src/index.js",
+      "bytes": 331,
+      "sha256": "693af43094cb1d89d8052b153b13ee6d9175f3c99dff26146e2a933a2f53bf4b"
+    },
+    {
+      "path": "packages/agent-grid/src/layout.js",
+      "bytes": 3362,
+      "sha256": "422977a6af684f8716fd94c1ecc567fb78f5add90ade3b4d40e40464cb75e250"
+    },
+    {
+      "path": "packages/agent-grid/src/styles.js",
+      "bytes": 5006,
+      "sha256": "42c137932b0ad68ce4e0e1e86957c883d5ffab879b4f56ed870e6625dff0ca37"
+    },
+    {
+      "path": "packages/agent-grid/tests/core.test.js",
+      "bytes": 5462,
+      "sha256": "68131535798f8fcb9b1653e5106adac296b1bb61ba55bcb79646b666401c1f01"
+    }
+  ]
+}

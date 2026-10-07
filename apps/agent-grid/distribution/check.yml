@@ -1,0 +1,49 @@
+name: Check
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Ensure the isolated terminal runtime is available
+        run: |
+          if ! command -v tmux; then
+            sudo apt-get update
+            sudo apt-get install -y tmux
+          fi
+      - name: Core, HTTP policy, and isolated tmux checks
+        run: npm test
+      - name: Install browser verification tools
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify the real browser UI
+        run: npm run test:browser
+      - name: Check the distributable SDK
+        run: |
+          npm run pack:sdk
+          mkdir artifacts/sdk-check
+          tar -xzf artifacts/karnafkatom-agent-grid-0.1.0.tgz -C artifacts/sdk-check
+          node --input-type=module -e "const sdk = await import('./artifacts/sdk-check/package/src/index.js'); if (typeof sdk.createHttpAdapter !== 'function') process.exit(1); await import('./artifacts/sdk-check/package/src/element.js');"
+          test -f artifacts/sdk-check/package/LICENSE
+          test -f artifacts/sdk-check/package/NOTICE
+          test -f artifacts/sdk-check/package/THIRD_PARTY_NOTICES.md
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: release-evidence
+          path: |
+            artifacts/agent-grid-desktop.png
+            artifacts/agent-grid-mobile.png
+            artifacts/karnafkatom-agent-grid-0.1.0.tgz
+          retention-days: 14

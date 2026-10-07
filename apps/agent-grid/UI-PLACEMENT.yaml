@@ -1,0 +1,15 @@
+product: agent-grid
+owner: Karnaf0katom
+kind: standalone-oss-developer-tool
+library: ../../packages/agent-grid/src/element.js
+authorization: Owner requested a separate app and reusable open-source Grid on 2026-10-07
+surfaces:
+  - name: grid
+    route: /
+    template: split-live
+    primitives: [toolbar, button, select, status, session-tile, composer, separator, alert, empty-state]
+    implementation: Browser-native components with scoped CSS; distributable without private platform dependencies
+    reads: [GET /api/config, GET /api/sessions, GET /api/sessions/:id/output]
+    writes: [POST /api/sessions/:id/input, POST /api/sessions/:id/actions]
+    states: [loading, empty, error, connected, read-only]
+    theme: Host-overridable CSS custom properties with a dark terminal default

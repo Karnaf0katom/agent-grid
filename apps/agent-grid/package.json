@@ -1,0 +1,12 @@
+{
+  "name": "agent-grid-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test ../../packages/agent-grid/tests/*.test.js tests/*.test.js",
+    "test:browser": "node tests/browser-smoke.js"
+  }
+}

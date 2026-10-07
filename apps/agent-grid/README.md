@@ -4,7 +4,7 @@
 
 Grid arranges the view. Your app owns the agents.
 
-![Agent Grid with simulated sessions](apps/agent-grid/docs/preview.png)
+![Agent Grid with simulated sessions](docs/preview.png)
 
 Use it to see which sessions need attention, focus an agent, send a manual prompt, and keep the other sessions in view. Developers supply an adapter for their existing runtime; Grid never needs to replace that runtime.
 
@@ -55,7 +55,7 @@ const grid = mountAgentGrid(document.querySelector('#agents'), {
 // grid.destroy();
 ```
 
-Your host provides the [adapter contract](apps/agent-grid/docs/integrating.md). The component is browser-native and works with plain JavaScript, React, Vue, or any host that can mount a DOM element. TypeScript declarations are included. You can also supply your own terminal or chat renderer with `mountSession()`.
+Your host provides the [adapter contract](docs/integrating.md). The component is browser-native and works with plain JavaScript, React, Vue, or any host that can mount a DOM element. TypeScript declarations are included. You can also supply your own terminal or chat renderer with `mountSession()`.
 
 ## Included in v0.1
 
@@ -70,7 +70,7 @@ The built-in output view polls **text snapshots**. It is suitable for monitoring
 
 ## Integrating with CCC
 
-[Claude Command Center](https://github.com/amirfish1/claude-command-center) can use Grid as an optional presentation component. CCC keeps its session management, rules, permissions, and project license. The [CCC adoption guide](apps/agent-grid/docs/ccc-adoption.md) proposes a small integration with no backend rewrite or dependency installation.
+[Claude Command Center](https://github.com/amirfish1/claude-command-center) can use Grid as an optional presentation component. CCC keeps its session management, rules, permissions, and project license. The [CCC adoption guide](docs/ccc-adoption.md) proposes a small integration with no backend rewrite or dependency installation.
 
 ## Development
 
@@ -89,4 +89,4 @@ The tmux smoke test creates its own socket and session and closes only that sess
 
 New code is **Apache 2.0**. Commercial use, paid products, modification, and integration with proprietary apps are permitted. Keep the license and required notices. Grid does not impose its license on the rest of an app or give its author ownership of that app. A public UI watermark is not required.
 
-See [LICENSE](packages/agent-grid/LICENSE), [NOTICE](packages/agent-grid/NOTICE), [third-party notices](packages/agent-grid/THIRD_PARTY_NOTICES.md), and the [license guide](apps/agent-grid/docs/licensing.md). Layout and ordering logic originated in Agent Deck's Fleet Grid; its MIT notice is preserved.
+See [LICENSE](../../packages/agent-grid/LICENSE), [NOTICE](../../packages/agent-grid/NOTICE), [third-party notices](../../packages/agent-grid/THIRD_PARTY_NOTICES.md), and the [license guide](docs/licensing.md). Layout and ordering logic originated in Agent Deck's Fleet Grid; its MIT notice is preserved.

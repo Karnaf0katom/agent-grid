@@ -1,0 +1,16 @@
+name: agent-grid
+owner: Karnaf0katom
+purpose: Standalone open-source presentation and manual control of host-owned agent sessions
+entry: README.md
+library: ../../packages/agent-grid
+parts:
+  app: server.js
+  browser: public/
+  host_adapters: adapters/
+  tests: tests/
+  distribution: scripts/export.py
+  evidence: docs/research.md
+boundaries:
+  - Existing agent runtimes and their rules remain owned by the host
+  - No provider login, agent spawning, worktree creation, or automatic prompts
+  - Does not modify or restart Agent Deck or CCC

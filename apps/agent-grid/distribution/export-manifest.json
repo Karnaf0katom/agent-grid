@@ -1,0 +1,205 @@
+[
+  {
+    "source": "apps/agent-grid/distribution/package.json",
+    "destination": "package.json"
+  },
+  {
+    "source": "apps/agent-grid/distribution/gitignore",
+    "destination": ".gitignore"
+  },
+  {
+    "source": "apps/agent-grid/distribution/check.yml",
+    "destination": ".github/workflows/check.yml"
+  },
+  {
+    "source": "apps/agent-grid/README.md",
+    "destination": "README.md",
+    "root_readme": true
+  },
+  {
+    "source": "packages/agent-grid/LICENSE",
+    "destination": "LICENSE"
+  },
+  {
+    "source": "packages/agent-grid/LICENSE",
+    "destination": "packages/agent-grid/LICENSE"
+  },
+  {
+    "source": "packages/agent-grid/NOTICE",
+    "destination": "NOTICE"
+  },
+  {
+    "source": "packages/agent-grid/NOTICE",
+    "destination": "packages/agent-grid/NOTICE"
+  },
+  {
+    "source": "packages/agent-grid/THIRD_PARTY_NOTICES.md",
+    "destination": "THIRD_PARTY_NOTICES.md"
+  },
+  {
+    "source": "packages/agent-grid/THIRD_PARTY_NOTICES.md",
+    "destination": "packages/agent-grid/THIRD_PARTY_NOTICES.md"
+  },
+  {
+    "source": "apps/agent-grid/docs/contributing.md",
+    "destination": "CONTRIBUTING.md"
+  },
+  {
+    "source": "apps/agent-grid/docs/security.md",
+    "destination": "SECURITY.md"
+  },
+  {
+    "source": "packages/agent-grid/package.json",
+    "destination": "packages/agent-grid/package.json"
+  },
+  {
+    "source": "packages/agent-grid/README.md",
+    "destination": "packages/agent-grid/README.md"
+  },
+  {
+    "source": "packages/agent-grid/src/index.js",
+    "destination": "packages/agent-grid/src/index.js"
+  },
+  {
+    "source": "packages/agent-grid/src/index.d.ts",
+    "destination": "packages/agent-grid/src/index.d.ts"
+  },
+  {
+    "source": "packages/agent-grid/src/element.js",
+    "destination": "packages/agent-grid/src/element.js"
+  },
+  {
+    "source": "packages/agent-grid/src/element.d.ts",
+    "destination": "packages/agent-grid/src/element.d.ts"
+  },
+  {
+    "source": "packages/agent-grid/src/adapters.js",
+    "destination": "packages/agent-grid/src/adapters.js"
+  },
+  {
+    "source": "packages/agent-grid/src/layout.js",
+    "destination": "packages/agent-grid/src/layout.js"
+  },
+  {
+    "source": "packages/agent-grid/src/styles.js",
+    "destination": "packages/agent-grid/src/styles.js"
+  },
+  {
+    "source": "packages/agent-grid/tests/core.test.js",
+    "destination": "packages/agent-grid/tests/core.test.js"
+  },
+  {
+    "source": "apps/agent-grid/server.js",
+    "destination": "apps/agent-grid/server.js"
+  },
+  {
+    "source": "apps/agent-grid/adapters/demo.js",
+    "destination": "apps/agent-grid/adapters/demo.js"
+  },
+  {
+    "source": "apps/agent-grid/adapters/tmux.js",
+    "destination": "apps/agent-grid/adapters/tmux.js"
+  },
+  {
+    "source": "apps/agent-grid/public/index.html",
+    "destination": "apps/agent-grid/public/index.html"
+  },
+  {
+    "source": "apps/agent-grid/public/main.js",
+    "destination": "apps/agent-grid/public/main.js"
+  },
+  {
+    "source": "apps/agent-grid/public/app.css",
+    "destination": "apps/agent-grid/public/app.css"
+  },
+  {
+    "source": "apps/agent-grid/tests/server.test.js",
+    "destination": "apps/agent-grid/tests/server.test.js"
+  },
+  {
+    "source": "apps/agent-grid/tests/tmux.test.js",
+    "destination": "apps/agent-grid/tests/tmux.test.js"
+  },
+  {
+    "source": "apps/agent-grid/tests/browser-smoke.js",
+    "destination": "apps/agent-grid/tests/browser-smoke.js"
+  },
+  {
+    "source": "apps/agent-grid/README.md",
+    "destination": "apps/agent-grid/README.md"
+  },
+  {
+    "source": "apps/agent-grid/.gitignore",
+    "destination": "apps/agent-grid/.gitignore"
+  },
+  {
+    "source": "apps/agent-grid/docs/integrating.md",
+    "destination": "apps/agent-grid/docs/integrating.md"
+  },
+  {
+    "source": "apps/agent-grid/docs/tmux.md",
+    "destination": "apps/agent-grid/docs/tmux.md"
+  },
+  {
+    "source": "apps/agent-grid/docs/licensing.md",
+    "destination": "apps/agent-grid/docs/licensing.md"
+  },
+  {
+    "source": "apps/agent-grid/docs/research.md",
+    "destination": "apps/agent-grid/docs/research.md"
+  },
+  {
+    "source": "apps/agent-grid/docs/ccc-adoption.md",
+    "destination": "apps/agent-grid/docs/ccc-adoption.md"
+  },
+  {
+    "source": "apps/agent-grid/MAP.yaml",
+    "destination": "apps/agent-grid/MAP.yaml"
+  },
+  {
+    "source": "apps/agent-grid/UI-PLACEMENT.yaml",
+    "destination": "apps/agent-grid/UI-PLACEMENT.yaml"
+  },
+  {
+    "source": "apps/agent-grid/docs/contributing.md",
+    "destination": "apps/agent-grid/docs/contributing.md"
+  },
+  {
+    "source": "apps/agent-grid/docs/security.md",
+    "destination": "apps/agent-grid/docs/security.md"
+  },
+  {
+    "source": "apps/agent-grid/scripts/export.py",
+    "destination": "apps/agent-grid/scripts/export.py"
+  },
+  {
+    "source": "apps/agent-grid/distribution/export-manifest.json",
+    "destination": "apps/agent-grid/distribution/export-manifest.json"
+  },
+  {
+    "source": "apps/agent-grid/distribution/package.json",
+    "destination": "apps/agent-grid/distribution/package.json"
+  },
+  {
+    "source": "apps/agent-grid/distribution/gitignore",
+    "destination": "apps/agent-grid/distribution/gitignore"
+  },
+  {
+    "source": "apps/agent-grid/distribution/check.yml",
+    "destination": "apps/agent-grid/distribution/check.yml"
+  },
+  {
+    "source": "apps/agent-grid/docs/preview.png",
+    "destination": "apps/agent-grid/docs/preview.png",
+    "optional": true
+  },
+  {
+    "source": "apps/agent-grid/docs/preview-mobile.png",
+    "destination": "apps/agent-grid/docs/preview-mobile.png",
+    "optional": true
+  },
+  {
+    "source": "apps/agent-grid/package.json",
+    "destination": "apps/agent-grid/package.json"
+  }
+]

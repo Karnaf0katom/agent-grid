@@ -1,0 +1,6 @@
+node_modules/
+artifacts/
+apps/agent-grid/out/
+apps/agent-grid/artifacts/
+*.tgz
+.DS_Store

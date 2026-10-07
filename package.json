@@ -1,0 +1,16 @@
+{
+  "name": "agent-grid-project",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Karnaf Katom (Karnaf0katom)",
+  "description": "Standalone Agent Grid app and embeddable SDK.",
+  "scripts": {
+    "start": "node apps/agent-grid/server.js",
+    "test": "node --test packages/agent-grid/tests/*.test.js apps/agent-grid/tests/*.test.js",
+    "test:browser": "node apps/agent-grid/tests/browser-smoke.js",
+    "pack:sdk": "npm pack ./packages/agent-grid --pack-destination artifacts"
+  },
+  "devDependencies": { "playwright": "1.61.0" }
+}

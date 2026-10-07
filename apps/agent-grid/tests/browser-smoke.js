@@ -39,6 +39,9 @@ try {
   await waitCount(5);
   assert.equal(await input.inputValue(), 'Draft survives focus and layout changes.');
 
+  const beforeDrag = await ids();
+  await grid.locator(`[data-session-id="${beforeDrag.at(-1)}"] .grip`).dragTo(grid.locator(`[data-session-id="${beforeDrag[0]}"]`), { targetPosition: { x: 12, y: 12 } });
+  assert.equal((await ids())[0], beforeDrag.at(-1));
   const beforeOrder = await ids();
   const first = grid.locator(`[data-session-id="${beforeOrder[0]}"] .grip`);
   await first.focus(); await page.keyboard.press('ArrowRight');
@@ -48,6 +51,13 @@ try {
   const beforeSize = await divider.getAttribute('aria-valuenow');
   await divider.focus(); await page.keyboard.press('ArrowRight');
   assert.notEqual(await divider.getAttribute('aria-valuenow'), beforeSize);
+  const afterKeyboardSize = await divider.getAttribute('aria-valuenow');
+  const bounds = await divider.boundingBox();
+  await page.mouse.move(bounds.x + bounds.width / 2, bounds.y + 20);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + bounds.width / 2 + 40, bounds.y + 20);
+  await page.mouse.up();
+  assert.notEqual(await divider.getAttribute('aria-valuenow'), afterKeyboardSize);
   const savedSize = await divider.getAttribute('aria-valuenow');
   await page.reload(); await waitCount(5);
   assert.deepEqual(await ids(), afterOrder);
@@ -82,8 +92,12 @@ try {
   await page.evaluate(async () => {
     const { mountAgentGrid } = await import('/sdk/element.js');
     window.rendererCounts = { mounted: 0, cleaned: 0 };
+    window.rendererState = { offline: false, rows: [{ id: 'custom', title: '<img src=x onerror=alert(1)>', status: 'running' }] };
     const handle = mountAgentGrid(document.body, { storageKey: 'renderer-test', adapter: {
-      listSessions: async () => [{ id: 'custom', title: '<img src=x onerror=alert(1)>', status: 'running' }],
+      listSessions: async () => {
+        if (window.rendererState.offline) throw new Error('Host offline');
+        return window.rendererState.rows;
+      },
       mountSession(container) { window.rendererCounts.mounted++; container.textContent = 'Custom host renderer'; return () => { window.rendererCounts.cleaned++; }; },
     } });
     window.rendererHandle = handle;
@@ -93,10 +107,16 @@ try {
   assert.equal(await custom.locator('img').count(), 0);
   assert.match(await custom.locator('.title').textContent(), /<img/);
   await custom.getByRole('button', { name: /Focus <img/ }).click();
+  await page.evaluate(async () => { window.rendererState.offline = true; await window.rendererHandle.element.refresh(); });
+  await custom.locator('.banner').filter({ hasText: 'Host offline' }).waitFor();
+  assert.equal(await custom.locator('.tile:visible').count(), 1);
+  await page.evaluate(async () => { window.rendererState.offline = false; window.rendererState.rows = []; await window.rendererHandle.element.refresh(); });
+  await custom.locator('.state').filter({ hasText: 'Your grid is ready' }).waitFor();
+  assert.equal(await custom.locator('.tile').count(), 0);
   await page.evaluate(() => window.rendererHandle.destroy());
   assert.deepEqual(await page.evaluate(() => window.rendererCounts), { mounted: 1, cleaned: 1 });
   assert.deepEqual(errors, []);
-  console.log('PASS: browser layout, focus, drafts, hide/restore, ordering, resize/persistence, input isolation, read-only, mobile, escaping, and renderer cleanup.');
+  console.log('PASS: browser layout, focus, drafts, hide/restore, pointer/keyboard ordering and resize/persistence, input isolation, read-only, mobile, escaping, connection recovery, empty state, and renderer cleanup.');
 } finally {
   await browser.close();
   server.closeAllConnections();

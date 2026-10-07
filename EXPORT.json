@@ -157,13 +157,13 @@
     },
     {
       "path": "apps/agent-grid/tests/browser-smoke.js",
-      "bytes": 6380,
-      "sha256": "e76e47da9ec28d2acd6cde5461d223bc33d2a769b435cbc81657012b1f44fbd4"
+      "bytes": 7842,
+      "sha256": "5c858fc40e709998a4498810e3f2d4d516c389a5f0427821f4303e240f7bbb6d"
     },
     {
       "path": "apps/agent-grid/tests/server.test.js",
-      "bytes": 5320,
-      "sha256": "3566a99e414eb6579916bdb762de9670d2165d4820663d1a9aed115c310a943a"
+      "bytes": 5747,
+      "sha256": "741cb0982ab824ab34592e74100eb1ce9bec7cc5d1d05119ff49d71a6e41c0be"
     },
     {
       "path": "apps/agent-grid/tests/tmux.test.js",

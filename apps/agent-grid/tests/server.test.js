@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { request as httpRequest } from 'node:http';
 import { createGridServer, parseOptions } from '../server.js';
 import { createMemoryAdapter } from '../../../packages/agent-grid/src/index.js';
 
@@ -11,6 +12,16 @@ async function withServer(options, run) {
   finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
 }
 const post = (body, extra = {}) => ({ method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Agent-Grid': '1', ...extra }, body: JSON.stringify(body) });
+function rawGet(origin, headers) {
+  return new Promise((resolve, reject) => {
+    const request = httpRequest(new URL('/api/sessions', origin), { headers }, response => {
+      response.resume();
+      response.on('end', () => resolve(response.statusCode));
+    });
+    request.on('error', reject);
+    request.end();
+  });
+}
 
 test('demo works without installing or starting an agent runtime', async () => {
   await withServer({}, async origin => {
@@ -32,7 +43,8 @@ test('demo works without installing or starting an agent runtime', async () => {
 test('server rejects cross-origin, DNS rebinding, cross-site, and simple-form input', async () => {
   await withServer({}, async origin => {
     assert.equal((await fetch(`${origin}/api/sessions`, { headers: { Origin: 'https://untrusted.example' } })).status, 403);
-    assert.equal((await fetch(`${origin}/api/sessions`, { headers: { Host: 'rebind.example' } })).status, 403);
+    // fetch can normalize Host. The raw HTTP client exercises the actual wire header.
+    assert.equal(await rawGet(origin, { Host: 'rebind.example' }), 403);
     assert.equal((await fetch(`${origin}/api/sessions`, { headers: { 'Sec-Fetch-Site': 'cross-site' } })).status, 403);
     assert.equal((await fetch(`${origin}/api/sessions/inventory/input`, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: '{"text":"untrusted"}' })).status, 403);
     assert.equal((await fetch(`${origin}/api/sessions/inventory/input`, { ...post({ text: 'hello' }), headers: { 'Content-Type': 'application/json' } })).status, 403);

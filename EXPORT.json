@@ -111,6 +111,16 @@
       "sha256": "3c14cfdbd329588c0ddaaee0d5b1df018fe64cba41f468ff305f1e9f26636b0a"
     },
     {
+      "path": "apps/agent-grid/docs/preview-mobile.png",
+      "bytes": 167594,
+      "sha256": "9e83a12aebf745be93d1adf6af6c2a840e01db2c392a7c4de5ef0ebd5742ecb3"
+    },
+    {
+      "path": "apps/agent-grid/docs/preview.png",
+      "bytes": 167334,
+      "sha256": "0f96b28d44f263fb0510857e00213bc969e1647a89bde0cbdfc18c9f8e6e105d"
+    },
+    {
       "path": "apps/agent-grid/docs/research.md",
       "bytes": 3013,
       "sha256": "61729ec43ef6bc948694d63f7c397b3cabd96429b2ddcc3f4dd592309db0d3a8"

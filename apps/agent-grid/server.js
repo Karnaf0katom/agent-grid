@@ -60,7 +60,7 @@ export function createGridServer({ mode = 'demo', readOnly = mode !== 'demo', ad
       const url = new URL(request.url, `http://127.0.0.1:${port}`);
       if (url.pathname.startsWith('/api/') && request.headers['sec-fetch-site'] === 'cross-site') throw new AdapterError('Cross-site access is disabled.', 403);
       if (request.method === 'GET' && url.pathname === '/api/config') {
-        return json(response, 200, { mode, readOnly, output: 'snapshot', version: '0.2.0' });
+        return json(response, 200, { mode, readOnly, output: 'snapshot', version: '0.2.1' });
       }
       if (request.method === 'GET' && url.pathname === '/api/sessions') {
         const sessions = normalizeSessions(await host.listSessions());

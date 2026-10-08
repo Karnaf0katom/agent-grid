@@ -16,11 +16,12 @@ const ids = () => tiles().evaluateAll(elements => elements.map(element => elemen
 const waitCount = async count => { await page.waitForFunction(expected => [...document.querySelector('agent-grid').shadowRoot.querySelectorAll('.tile')].filter(tile => !tile.hidden).length === expected, count); };
 const checkPaneControls = async () => {
   const clipped = await tiles().evaluateAll(elements => elements.flatMap(tile => {
-    const bottom = tile.getBoundingClientRect().bottom;
-    return ['.composer', '.tile-footer'].flatMap(selector => {
-      const control = tile.querySelector(selector);
-      return !control.hidden && control.getBoundingClientRect().bottom > bottom + 1 ? [`${tile.dataset.sessionId}: ${selector}`] : [];
-    });
+    const bounds = tile.getBoundingClientRect();
+    return ['.tile-header button', '.composer', '.composer textarea', '.composer .send', '.tile-footer', '.tile-footer button'].flatMap(selector => [...tile.querySelectorAll(selector)].flatMap(control => {
+      if (!control.getClientRects().length) return [];
+      const rect = control.getBoundingClientRect();
+      return rect.bottom > bounds.bottom + 1 || rect.left < bounds.left - 1 || rect.right > bounds.right + 1 ? [`${tile.dataset.sessionId}: ${selector}`] : [];
+    }));
   }));
   assert.deepEqual(clipped, [], 'All visible pane controls must fit inside their pane.');
 };
@@ -172,6 +173,22 @@ try {
   await checkPaneControls();
   await page.screenshot({ path: 'artifacts/agent-grid-mobile.png', fullPage: true });
 
+  // Embedded SDK panels adapt to their own width inside a wide desktop viewport.
+  await page.setViewportSize({ width: 1440, height: 1100 });
+  await page.waitForFunction(() => document.querySelector('agent-grid')._columns > 1);
+  await grid.evaluate(element => { element.style.width = '480px'; });
+  await page.waitForFunction(() => document.querySelector('agent-grid')._columns === 1);
+  const embedded = await grid.evaluate(element => ({
+    host: element.getBoundingClientRect().width,
+    canvas: element.shadowRoot.querySelector('.canvas').getBoundingClientRect().width,
+  }));
+  assert.ok(Math.abs(embedded.host - embedded.canvas) < 2, 'A narrow embedded grid must stack its sidebar even in a wide viewport.');
+  await checkPaneControls();
+  await grid.screenshot({ path: 'artifacts/agent-grid-embedded.png' });
+  await grid.evaluate(element => { element.style.width = ''; });
+  await page.waitForFunction(() => document.querySelector('agent-grid')._columns > 1);
+  await checkPaneControls();
+
   // A host-supplied renderer mounts once and cleans up when the element is removed.
   await page.evaluate(async () => {
     const { mountAgentGrid } = await import('/sdk/element.js');
@@ -238,7 +255,7 @@ try {
   await page.evaluate(() => window.viewHandle.destroy());
   assert.deepEqual(await page.evaluate(() => window.viewRendererCounts), { mounted: 4, cleaned: 4 });
   assert.deepEqual(errors, []);
-  console.log('PASS: browser layout, focus, drafts, hide/restore, pointer/keyboard ordering and resize/persistence, input isolation, read-only, session catalog/search/selection, independent saved grids, fullscreen, mobile, escaping, connection recovery, empty state, returning sessions, and renderer cleanup.');
+  console.log('PASS: browser layout, focus, drafts, hide/restore, pointer/keyboard ordering and resize/persistence, input isolation, read-only, session catalog/search/selection, independent saved grids, fullscreen, mobile, narrow desktop embeds, escaping, connection recovery, empty state, returning sessions, and renderer cleanup.');
 } finally {
   await browser.close();
   server.closeAllConnections();

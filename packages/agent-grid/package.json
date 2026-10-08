@@ -1,6 +1,6 @@
 {
   "name": "@karnafkatom/agent-grid",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A framework-neutral, host-controlled grid for agent sessions.",
   "type": "module",
   "license": "Apache-2.0",

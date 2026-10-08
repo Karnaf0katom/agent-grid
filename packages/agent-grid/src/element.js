@@ -452,6 +452,9 @@ export class AgentGridElement extends ElementBase {
   }
   _render() {
     if (!this._ready) return;
+    const hostWidth = this.getBoundingClientRect().width;
+    this._shell.classList.toggle('compact', hostWidth <= 820);
+    this._shell.classList.toggle('small', hostWidth <= 600);
     this._sidebar.hidden = !this._sidebarOpen;
     this._workbench.classList.toggle('with-sidebar', this._sidebarOpen);
     this._sidebarToggle.setAttribute('aria-expanded', String(this._sidebarOpen));

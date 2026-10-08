@@ -2,8 +2,8 @@
   "files": [
     {
       "path": ".github/workflows/check.yml",
-      "bytes": 2149,
-      "sha256": "b512ff7bb5ec770889490c019aa1ad24b7f21aacd38254cac31edf2f7c254eae"
+      "bytes": 2195,
+      "sha256": "0ddf32d1e23712f7e54133ce06fb95f88d7633b411543b66c6da49c40c10efe1"
     },
     {
       "path": ".gitignore",
@@ -28,7 +28,7 @@
     {
       "path": "README.md",
       "bytes": 5532,
-      "sha256": "8f4b180234f167fa1bd798b459beed1c60712740f3b3620d026966b7ca04e522"
+      "sha256": "ff4a8efb35bc16efbd704aced36fbffd4726a14a7b4d86f07a26ed4009c49661"
     },
     {
       "path": "SECURITY.md",
@@ -53,7 +53,7 @@
     {
       "path": "apps/agent-grid/README.md",
       "bytes": 5486,
-      "sha256": "9df25e4b8913524f5bf04b922d2cc92dbac72581b91f72e2360c76124e954f70"
+      "sha256": "26d4cdb857104d9100a01552a393bbc1af9f778f9dd02fe9a3bc3c794f01e2b4"
     },
     {
       "path": "apps/agent-grid/UI-PLACEMENT.yaml",
@@ -72,8 +72,8 @@
     },
     {
       "path": "apps/agent-grid/distribution/check.yml",
-      "bytes": 2149,
-      "sha256": "b512ff7bb5ec770889490c019aa1ad24b7f21aacd38254cac31edf2f7c254eae"
+      "bytes": 2195,
+      "sha256": "0ddf32d1e23712f7e54133ce06fb95f88d7633b411543b66c6da49c40c10efe1"
     },
     {
       "path": "apps/agent-grid/distribution/export-manifest.json",
@@ -88,7 +88,7 @@
     {
       "path": "apps/agent-grid/distribution/package.json",
       "bytes": 588,
-      "sha256": "2cd8c830ad0e688e585da1c14f38a37a0f2129c01531228c109aff42b1bea075"
+      "sha256": "2f5468375a475bb0c49297b51b7db8965ad529e1f38e87fc0caf9dd682807b86"
     },
     {
       "path": "apps/agent-grid/docs/ccc-adoption.md",
@@ -102,8 +102,8 @@
     },
     {
       "path": "apps/agent-grid/docs/integrating.md",
-      "bytes": 7527,
-      "sha256": "2154f8e91e2aa02c7bb52f12ac63befc49ebd87ca378311f4392ec32cab3cebb"
+      "bytes": 7640,
+      "sha256": "e9685f3f6e0b9a504444138fea7a62661fe9b0ff0cb813c5303977b6463f6c52"
     },
     {
       "path": "apps/agent-grid/docs/licensing.md",
@@ -117,8 +117,8 @@
     },
     {
       "path": "apps/agent-grid/docs/preview.png",
-      "bytes": 203185,
-      "sha256": "3cc3087ba48a329fc3e31e707deafd815085c66907d755ea7d2c87fd0706a4b2"
+      "bytes": 204527,
+      "sha256": "5669a31650e6d2adb5911d0bf2eecfa9206ff0ee0ffbb292c66ae0a260714bce"
     },
     {
       "path": "apps/agent-grid/docs/research.md",
@@ -138,7 +138,7 @@
     {
       "path": "apps/agent-grid/package.json",
       "bytes": 305,
-      "sha256": "7d0c4f1c04372a660cc11ece3ab8bccf4ac10a6bdf5f62ab917c8d176427f6c7"
+      "sha256": "19d75effc57737bf754e84164502c9aef4715094a0a78866b42e209c3701fc5a"
     },
     {
       "path": "apps/agent-grid/public/app.css",
@@ -163,12 +163,12 @@
     {
       "path": "apps/agent-grid/server.js",
       "bytes": 8952,
-      "sha256": "d2c37224036b058124fa2a2fbac107c2110b64c54f9f66c825bb8aa86d22e006"
+      "sha256": "a38a5f47707f7f35ebb69bd7add65c1123133a2d60e94309edc62dc53d5304fc"
     },
     {
       "path": "apps/agent-grid/tests/browser-smoke.js",
-      "bytes": 15751,
-      "sha256": "1f9fa73a98e9555b36a3057a7c8e69a93f6269d505dd40f183adb9f12c148431"
+      "bytes": 16993,
+      "sha256": "bb35daf991335751befdec2ee17f41ed28afc6d71b29147ebe051359a7c3b21d"
     },
     {
       "path": "apps/agent-grid/tests/server.test.js",
@@ -183,7 +183,7 @@
     {
       "path": "package.json",
       "bytes": 588,
-      "sha256": "2cd8c830ad0e688e585da1c14f38a37a0f2129c01531228c109aff42b1bea075"
+      "sha256": "2f5468375a475bb0c49297b51b7db8965ad529e1f38e87fc0caf9dd682807b86"
     },
     {
       "path": "packages/agent-grid/LICENSE",
@@ -208,7 +208,7 @@
     {
       "path": "packages/agent-grid/package.json",
       "bytes": 778,
-      "sha256": "120b69ccd67e61ce4921b5aea4e69a1351cbde41fca6b29ef43f8be866bbffa4"
+      "sha256": "ee045cdf3e98e1fda49dad0d1580f650effde9cc51c3914e7b1e2a1c1805625d"
     },
     {
       "path": "packages/agent-grid/src/adapters.js",
@@ -222,8 +222,8 @@
     },
     {
       "path": "packages/agent-grid/src/element.js",
-      "bytes": 43444,
-      "sha256": "bae3ad961c4052291126d1fc592b06a65527828155b15cf745d07dcf9733d472"
+      "bytes": 43626,
+      "sha256": "9fcb60b087d8fdbe9126cf391fb632afd297e43ef572e1d88e19e8cfc2e7e5be"
     },
     {
       "path": "packages/agent-grid/src/index.d.ts",
@@ -242,8 +242,8 @@
     },
     {
       "path": "packages/agent-grid/src/styles.js",
-      "bytes": 8286,
-      "sha256": "9832d8adb6f38ce0cfcb1e95e8115d1e11bd8be20d0886d9fa825df3cd147938"
+      "bytes": 8335,
+      "sha256": "bd1d0efcbbb89134fead68fbf6b3555deedfe71d0051f29ef030856c10cd336a"
     },
     {
       "path": "packages/agent-grid/src/views.js",

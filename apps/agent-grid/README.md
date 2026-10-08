@@ -41,7 +41,7 @@ The server binds to loopback, validates the request origin, and enforces permiss
 Install the SDK archive attached to the GitHub release:
 
 ```sh
-npm install https://github.com/Karnaf0katom/agent-grid/releases/download/v0.2.0/karnafkatom-agent-grid-0.2.0.tgz
+npm install https://github.com/Karnaf0katom/agent-grid/releases/download/v0.2.1/karnafkatom-agent-grid-0.2.1.tgz
 ```
 
 Or install the library from a local clone:

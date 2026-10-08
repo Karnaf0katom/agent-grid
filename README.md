@@ -8,6 +8,8 @@ Grid arranges the view. Your app owns the agents.
 
 Use it to see which sessions need attention, focus an agent, send a manual prompt, and keep the other sessions in view. Developers supply an adapter for their existing runtime; Grid never needs to replace that runtime.
 
+The sidebar lists every host session, including idle sessions. Search by title, tool, or workspace, then check the sessions you want in view. **Save grid** gives that selection a name. Switch grids in the sidebar or top toolbar; each remembers its own filters, order, column count, and pane sizes. You can collapse the sidebar or use fullscreen when you need more space.
+
 ## Run the app
 
 Requires Node.js 20 or newer. The demo has no runtime dependencies, API keys, provider accounts, or build step.
@@ -39,7 +41,7 @@ The server binds to loopback, validates the request origin, and enforces permiss
 Install the SDK archive attached to the GitHub release:
 
 ```sh
-npm install https://github.com/Karnaf0katom/agent-grid/releases/download/v0.1.0/karnafkatom-agent-grid-0.1.0.tgz
+npm install https://github.com/Karnaf0katom/agent-grid/releases/download/v0.2.0/karnafkatom-agent-grid-0.2.0.tgz
 ```
 
 Or install the library from a local clone:
@@ -63,14 +65,19 @@ const grid = mountAgentGrid(document.querySelector('#agents'), {
 
 Your host provides the [adapter contract](apps/agent-grid/docs/integrating.md). The component is browser-native and works with plain JavaScript, React, Vue, or any host that can mount a DOM element. TypeScript declarations are included. You can also supply your own terminal or chat renderer with `mountSession()`.
 
-## Included in v0.1
+## Included in v0.2
 
+- Searchable session sidebar with individual inclusion controls and quick focus.
+- Named saved grids with independent selection, filters, order, and pane sizes.
+- Top toolbar with grid switching, automatic or 1–4 column layouts, and fullscreen.
 - Attention ordering, workspace filters, live/all toggle, hide/restore, and focused view.
 - Pointer and keyboard reordering; adjustable rows and columns; saved order and sizes.
 - Per-session multiline composers, manual input, and confirmed current-turn interrupt.
 - Explicit host capabilities and read-only mode; loading, empty, and error states.
 - A dependency-free demo, HTTP adapter, memory adapter, and tmux adapter.
 - A custom renderer seam that preserves mounted panes and cleans up on removal.
+
+Saved grids keep their selected session IDs when a host temporarily stops listing a session, so it returns to the same grid when available again. Switching grids preserves prompt drafts and mounted renderers. Existing v0.1 layouts migrate automatically. Saved grids live in this browser and are scoped to the host's `storageKey`.
 
 The built-in output view polls **text snapshots**. It is suitable for monitoring output and sending prompts; it is not a full PTY terminal emulator. Apps that need terminal keystrokes, ANSI rendering, or terminal resizing should mount their existing terminal renderer. In tmux mode, session status can be supplied by tmux options; inferred process status does not detect an agent's reasoning state.
 

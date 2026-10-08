@@ -81,12 +81,20 @@
     "destination": "packages/agent-grid/src/layout.js"
   },
   {
+    "source": "packages/agent-grid/src/views.js",
+    "destination": "packages/agent-grid/src/views.js"
+  },
+  {
     "source": "packages/agent-grid/src/styles.js",
     "destination": "packages/agent-grid/src/styles.js"
   },
   {
     "source": "packages/agent-grid/tests/core.test.js",
     "destination": "packages/agent-grid/tests/core.test.js"
+  },
+  {
+    "source": "packages/agent-grid/tests/views.test.js",
+    "destination": "packages/agent-grid/tests/views.test.js"
   },
   {
     "source": "apps/agent-grid/server.js",

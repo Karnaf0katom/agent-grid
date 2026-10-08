@@ -83,8 +83,27 @@ When `mountSession` is supplied, Grid does not poll `readOutput`. The host owns 
 
 ## Persistence, theming, and events
 
-Set a distinct `storageKey` for each app/account. Only workspace selection, visibility, order, and sizes are saved to localStorage; prompts and terminal output are not. If storage is unavailable, the grid still works. Layouts persist per workspace, session set, and column count.
+Set a distinct `storageKey` for each app/account. Named grids, selected session IDs, workspace/live filters, sidebar visibility, order, column preference, and pane sizes are saved to localStorage; prompts and terminal output are not. If storage is unavailable, the grid still works. Layouts persist independently per saved grid, workspace, session set, and column count. v0.1 storage migrates automatically. Prompts survive view switches during the mounted component's lifetime, but are not saved across page reloads.
+
+The sidebar catalogs every session the adapter returns. Its search changes the catalog alone. Checking a session includes it in the current grid and adjusts workspace/live filters as needed to make it visible. Column preferences reduce automatically on narrow screens and return when space permits. Saving captures the current grid's sessions, order, and sizes; a temporary focused view does not remove its other sessions. Those selected IDs are retained even while a session is absent from the host.
+
+Hosts can also manage saved grids through the component:
+
+```js
+const { element, destroy } = mountAgentGrid(container, { adapter, storageKey: 'my-app-grid' });
+// Call after the host's sessions are available, or supply explicit session IDs.
+const reviewGrid = element.saveGrid('Review', ['checkout', 'api-review']);
+element.selectGrid('all'); // Return to the default view.
+element.selectGrid(reviewGrid);
+console.log(element.savedGrids); // Copies of { id, name, sessionIds }.
+// element.deleteGrid(reviewGrid) removes the saved view, leaving host sessions open.
+// destroy() cleans up the component and every mounted host renderer.
+```
+
+`saveGrid()` returns the new ID and selects that grid. `selectGrid()` and `deleteGrid()` throw for unknown IDs. Names must contain 1–80 characters. The default grid's ID is `all`; it cannot be deleted. Saving starts with an all-status filter so selected sessions remain visible when their work finishes. Other filters can then be adjusted independently.
+
+A Rust desktop host can supply the same adapter using its existing session and IPC interfaces. Grid remains a browser-native SDK; this release does not include a native installer or a Rust PTY backend.
 
 Host CSS can override `--ag-bg`, `--ag-panel`, `--ag-line`, `--ag-text`, `--ag-muted`, `--ag-accent`, `--ag-alert`, and `--ag-danger` on the element. Styles are scoped to its shadow root.
 
-`agent-grid-action` reports `{ sessionId, action }` after successful manual actions. `agent-grid-error` reports `{ message }`. Events bubble across the shadow boundary and do not include prompt contents. The package sends no telemetry.
+`agent-grid-action` reports `{ sessionId, action }` after successful manual actions. `agent-grid-error` reports `{ message }`. `agent-grid-view-change` reports `{ gridId, sessionIds }` on an explicit grid switch (`sessionIds: null` identifies the default view). Events bubble across the shadow boundary and do not include prompt contents. The package sends no telemetry.

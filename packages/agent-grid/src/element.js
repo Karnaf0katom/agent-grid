@@ -2,6 +2,7 @@
 // Copyright 2026 Karnaf Katom.
 import { normalizeSessions } from './adapters.js';
 import { ACTIVE_STATUSES, mergeTileOrder, insertTileOrder, resizeGridTracks, tileColumns, layoutKey, validTracks, createLayoutStore } from './layout.js';
+import { normalizeGridState, restoreGridViews } from './views.js';
 import { styles } from './styles.js';
 
 function node(tag, className, text) {
@@ -18,14 +19,6 @@ function button(text, label, handler, className = '') {
   element.addEventListener('click', handler);
   return element;
 }
-function dictionary(value, accept) {
-  const result = Object.create(null);
-  if (value && typeof value === 'object') for (const [key, entry] of Object.entries(value)) {
-    if (accept(entry)) result[key] = entry;
-  }
-  return result;
-}
-
 // Importing the element entry in Node is harmless. Registering/mounting needs a browser.
 const ElementBase = globalThis.HTMLElement || class {};
 export class AgentGridElement extends ElementBase {
@@ -42,6 +35,15 @@ export class AgentGridElement extends ElementBase {
     this._focused = null;
     this._orders = Object.create(null);
     this._layouts = Object.create(null);
+    this._defaultGridState = normalizeGridState();
+    this._grids = new Map();
+    this._activeGridId = 'all';
+    this._selection = null;
+    this._columnPreference = 0;
+    this._sidebarOpen = true;
+    this._search = '';
+    this._sessionRows = new Map();
+    this._gridButtons = new Map();
     this._epoch = 0;
     this._busy = false;
     this._ready = false;
@@ -56,6 +58,15 @@ export class AgentGridElement extends ElementBase {
     this._shell = node('div', 'shell');
     this._toolbar = node('div', 'toolbar');
     this._filters = node('div', 'filters');
+    this._sidebarToggle = button('Sessions', 'Toggle session sidebar', () => {
+      this._sidebarOpen = !this._sidebarOpen; this._persist(); this._render();
+    });
+    this._sidebarToggle.setAttribute('aria-controls', 'session-sidebar');
+    const gridLabel = node('label', 'label', 'Grid ');
+    this._gridSelect = node('select');
+    this._gridSelect.setAttribute('aria-label', 'Choose saved grid');
+    this._gridSelect.addEventListener('change', () => this.selectGrid(this._gridSelect.value));
+    gridLabel.append(this._gridSelect);
     const label = node('label', 'label', 'Workspace ');
     this._groupSelect = node('select');
     this._groupSelect.setAttribute('aria-label', 'Filter workspace');
@@ -73,7 +84,31 @@ export class AgentGridElement extends ElementBase {
       this._render();
       void this.refresh();
     });
-    this._filters.append(label, this._allButton);
+    const layoutLabel = node('label', 'label', 'Layout ');
+    this._layoutSelect = node('select');
+    this._layoutSelect.setAttribute('aria-label', 'Grid columns');
+    for (let count = 0; count <= 4; count++) {
+      const option = node('option', '', count ? `${count} column${count === 1 ? '' : 's'}` : 'Auto');
+      option.value = String(count); this._layoutSelect.append(option);
+    }
+    this._layoutSelect.addEventListener('change', () => {
+      this._columnPreference = Number(this._layoutSelect.value); this._persist(); this._render();
+    });
+    layoutLabel.append(this._layoutSelect);
+    this._filters.append(this._sidebarToggle, gridLabel, label, this._allButton, layoutLabel);
+    this._saveGridButton = button('Save grid', 'Save current sessions as a named grid', () => this._openSaveGrid());
+    this._deleteGridButton = button('Delete grid', 'Delete this saved grid', () => {
+      const grid = this._grids.get(this._activeGridId);
+      if (grid && globalThis.confirm(`Delete the saved grid “${grid.name}”? Your sessions will remain open.`)) this.deleteGrid(grid.id);
+    });
+    this._fullscreenButton = button('Fullscreen', 'Enter fullscreen grid', () => { void this._toggleFullscreen(); });
+    this._fullscreenButton.hidden = typeof this.requestFullscreen !== 'function';
+    this._onFullscreenChange = () => {
+      const active = document.fullscreenElement === this;
+      this._fullscreenButton.textContent = active ? 'Exit fullscreen' : 'Fullscreen';
+      this._fullscreenButton.setAttribute('aria-label', active ? 'Exit fullscreen grid' : 'Enter fullscreen grid');
+      this._fullscreenButton.setAttribute('aria-pressed', String(active));
+    };
     this._restoreFocus = button('← All panes', 'Exit focused session', () => this._focus(null));
     this._restoreHidden = button('Show hidden', 'Restore hidden sessions', () => {
       this._hidden.clear(); this._persist(); this._render(); void this.refresh();
@@ -81,10 +116,49 @@ export class AgentGridElement extends ElementBase {
     this._reset = button('Reset layout', 'Reset pane order and sizes for this workspace', () => {
       delete this._orders[this._group];
       for (const key of Object.keys(this._layouts)) if (key.startsWith(`${encodeURIComponent(this._group)}:`)) delete this._layouts[key];
+      this._columnPreference = 0;
       this._persist(); this._render();
     });
     this._meta = node('span', 'meta');
-    this._toolbar.append(this._filters, node('span', 'spacer'), this._restoreFocus, this._restoreHidden, this._reset, this._meta);
+    this._toolbar.append(this._filters, node('span', 'spacer'), this._saveGridButton, this._deleteGridButton, this._restoreFocus, this._restoreHidden, this._reset, this._fullscreenButton, this._meta);
+    this._workbench = node('div', 'workbench');
+    this._sidebar = node('aside', 'sidebar');
+    this._sidebar.id = 'session-sidebar';
+    this._sidebar.setAttribute('aria-label', 'Sessions and saved grids');
+    const gridsHeading = node('div', 'sidebar-heading');
+    gridsHeading.append(node('span', 'label', 'Grids'), button('+', 'Save current selection as a grid', () => this._openSaveGrid()));
+    this._gridList = node('nav', 'grid-list');
+    this._gridList.setAttribute('aria-label', 'Saved grids');
+    this._saveForm = node('form', 'save-grid-form');
+    this._saveForm.hidden = true;
+    this._nameInput = node('input');
+    this._nameInput.type = 'text'; this._nameInput.required = true; this._nameInput.maxLength = 80;
+    this._nameInput.placeholder = 'Name this grid…';
+    this._nameInput.setAttribute('aria-label', 'New grid name');
+    const save = node('button', '', 'Save'); save.type = 'submit';
+    this._saveError = node('span', 'tile-error'); this._saveError.hidden = true; this._saveError.setAttribute('role', 'alert');
+    this._saveForm.append(this._nameInput, save, button('Cancel', 'Cancel saving grid', () => {
+      this._saveForm.hidden = true; this._saveGridButton.focus();
+    }), this._saveError);
+    this._saveForm.addEventListener('submit', event => {
+      event.preventDefault();
+      try {
+        this.saveGrid(this._nameInput.value);
+        this._nameInput.value = ''; this._saveForm.hidden = true; this._saveError.hidden = true;
+        this._gridSelect.focus();
+      } catch (error) { this._saveError.textContent = error.message; this._saveError.hidden = false; }
+    });
+    this._sessionSearch = node('input', 'session-search');
+    this._sessionSearch.type = 'search'; this._sessionSearch.placeholder = 'Search all sessions…';
+    this._sessionSearch.setAttribute('aria-label', 'Search sessions');
+    this._sessionSearch.addEventListener('input', () => { this._search = this._sessionSearch.value; this._renderSidebar(); });
+    const selectionTools = node('div', 'selection-tools');
+    this._selectionCount = node('span', 'selection-count');
+    selectionTools.append(this._selectionCount, button('All', 'Include all sessions in this grid', () => this._selectAllSessions(true)), button('None', 'Remove all sessions from this grid', () => this._selectAllSessions(false)));
+    this._sessionList = node('div', 'session-list');
+    this._sidebarEmpty = node('p', 'sidebar-empty');
+    this._sidebar.append(gridsHeading, this._gridList, this._saveForm, node('div', 'sidebar-heading label', 'All host sessions'), this._sessionSearch, selectionTools, this._sessionList, this._sidebarEmpty);
+    this._canvas = node('div', 'canvas');
     this._banner = node('div', 'banner');
     this._banner.setAttribute('role', 'alert');
     this._errorText = node('span', 'message');
@@ -96,7 +170,9 @@ export class AgentGridElement extends ElementBase {
     this._announcer = node('div', 'sr-only');
     this._announcer.setAttribute('role', 'status');
     this._announcer.setAttribute('aria-live', 'polite');
-    this._shell.append(this._toolbar, this._banner, this._empty, this._stage, this._announcer);
+    this._canvas.append(this._banner, this._empty, this._stage);
+    this._workbench.append(this._sidebar, this._canvas);
+    this._shell.append(this._toolbar, this._workbench, this._announcer);
     this.shadowRoot.append(style, this._shell);
     this.shadowRoot.addEventListener('keydown', event => {
       if (event.key === 'Escape' && this._focused) { event.preventDefault(); this._focus(null); }
@@ -115,6 +191,8 @@ export class AgentGridElement extends ElementBase {
   }
   get readOnly() { return this.hasAttribute('readonly'); }
   set readOnly(value) { this.toggleAttribute('readonly', !!value); }
+  get activeGrid() { return this._activeGridId; }
+  get savedGrids() { return [...this._grids.values()].map(grid => ({ id: grid.id, name: grid.name, sessionIds: [...grid.sessionIds] })); }
   attributeChangedCallback() { if (this._ready) this._render(); }
 
   connectedCallback() {
@@ -122,21 +200,26 @@ export class AgentGridElement extends ElementBase {
     let storage;
     try { storage = globalThis.localStorage; } catch { /* Embedded browsers can forbid storage. */ }
     this._store = createLayoutStore(storage, this.getAttribute('storage-key') || 'agent-grid');
-    const saved = this._store.read();
-    this._group = typeof saved.group === 'string' ? saved.group : '*';
-    this._showAll = saved.showAll === true;
-    this._hidden = new Set(Array.isArray(saved.hidden) ? saved.hidden.filter(id => typeof id === 'string') : []);
-    this._orders = dictionary(saved.orders, value => Array.isArray(value) && value.every(id => typeof id === 'string'));
-    this._layouts = dictionary(saved.layouts, value => value && typeof value === 'object');
+    const saved = restoreGridViews(this._store.read());
+    this._defaultGridState = saved.defaultGrid;
+    this._grids = new Map(saved.grids.map(grid => [grid.id, grid]));
+    this._sidebarOpen = saved.sidebarOpen;
+    this._applyGrid(saved.activeGrid);
     this._observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
-      const width = this.getBoundingClientRect().width;
+      const width = this._canvas.getBoundingClientRect().width;
       if (Math.abs(width - (this._width || 0)) > 2) { this._width = width; this._render(); }
     }) : null;
     this._observer?.observe(this);
+    this._observer?.observe(this._canvas);
+    document.addEventListener('fullscreenchange', this._onFullscreenChange);
+    this._onFullscreenChange();
     this._start();
     this._render();
   }
-  disconnectedCallback() { this._observer?.disconnect(); this._stop(); this._ready = false; }
+  disconnectedCallback() {
+    this._observer?.disconnect(); document.removeEventListener('fullscreenchange', this._onFullscreenChange);
+    this._stop(); this._ready = false;
+  }
 
   _start() {
     if (!this._adapter) return;
@@ -161,7 +244,80 @@ export class AgentGridElement extends ElementBase {
     this._busy = false;
   }
   _persist() {
-    this._store?.write({ group: this._group, showAll: this._showAll, hidden: [...this._hidden], orders: this._orders, layouts: this._layouts });
+    const state = this._captureGridState();
+    const active = this._grids.get(this._activeGridId);
+    if (active) this._grids.set(active.id, { ...state, id: active.id, name: active.name, sessionIds: [...this._selection] });
+    else this._defaultGridState = state;
+    this._store?.write({ ...this._defaultGridState, grids: [...this._grids.values()], activeGrid: this._activeGridId, sidebarOpen: this._sidebarOpen });
+  }
+  _captureGridState() {
+    return normalizeGridState({ group: this._group, showAll: this._showAll, hidden: [...this._hidden], orders: this._orders, layouts: this._layouts, columns: this._columnPreference });
+  }
+  _applyGrid(id) {
+    const grid = this._grids.get(id);
+    const state = normalizeGridState(grid || this._defaultGridState);
+    this._activeGridId = grid ? id : 'all';
+    this._selection = grid ? new Set(grid.sessionIds) : null;
+    this._group = state.group; this._showAll = state.showAll;
+    this._hidden = new Set(state.hidden); this._orders = state.orders; this._layouts = state.layouts;
+    this._columnPreference = state.columns; this._focused = null;
+  }
+  selectGrid(id) {
+    if (id !== 'all' && !this._grids.has(id)) throw new RangeError('That saved grid does not exist.');
+    this._persist(); this._applyGrid(id); this._persist(); this._render(); void this.refresh();
+    this._emit('agent-grid-view-change', { gridId: this._activeGridId, sessionIds: this._selection ? [...this._selection] : null });
+  }
+  saveGrid(name, sessionIds = this._visibleSessions().map(session => session.id)) {
+    if (typeof name !== 'string' || !name.trim() || name.trim().length > 80) throw new TypeError('Give the grid a name of 1–80 characters.');
+    if (!Array.isArray(sessionIds) || sessionIds.some(id => typeof id !== 'string' || !id)) throw new TypeError('Session ids must be nonempty strings.');
+    this._persist();
+    let id;
+    do { id = `grid-${globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}`; } while (this._grids.has(id));
+    const ids = [...new Set(sessionIds)];
+    const state = this._captureGridState();
+    state.orders['*'] = [...ids];
+    // Membership replaces the workspace filter; carry the current tracks to that scope.
+    const prefix = `${encodeURIComponent(this._group)}:`;
+    for (const [key, tracks] of Object.entries(state.layouts)) if (key.startsWith(prefix)) state.layouts[`*:${key.slice(prefix.length)}`] = { cols: [...tracks.cols], rows: [...tracks.rows] };
+    this._grids.set(id, { ...state, id, name: name.trim(), sessionIds: ids, group: '*', showAll: true, hidden: [] });
+    this.selectGrid(id);
+    this._announcer.textContent = `Saved grid ${name.trim()}.`;
+    return id;
+  }
+  deleteGrid(id) {
+    if (!this._grids.has(id)) throw new RangeError('That saved grid does not exist.');
+    if (this._activeGridId === id) this.selectGrid('all');
+    this._grids.delete(id); this._persist(); this._render();
+  }
+  _openSaveGrid() {
+    this._sidebarOpen = true; this._saveForm.hidden = false; this._saveError.hidden = true;
+    this._persist(); this._render(); this._nameInput.focus();
+  }
+  async _toggleFullscreen() {
+    try {
+      if (document.fullscreenElement === this) await document.exitFullscreen();
+      else await this.requestFullscreen();
+    } catch (error) { this._fail(new Error(error.message || 'Fullscreen is unavailable in this host.')); }
+  }
+  _setSessionIncluded(id, included) {
+    const session = this._sessions.find(item => item.id === id);
+    if (!session) return;
+    if (included) {
+      this._selection?.add(id); this._hidden.delete(id);
+      if (!ACTIVE_STATUSES.has(session.status)) this._showAll = true;
+      if (this._group !== '*' && session.group !== this._group) this._group = '*';
+    } else {
+      if (this._selection) { this._selection.delete(id); this._hidden.delete(id); }
+      else this._hidden.add(id);
+      if (this._focused === id) this._focused = null;
+    }
+    this._persist(); this._render(); void this.refresh();
+  }
+  _selectAllSessions(included) {
+    this._group = '*'; this._showAll = true; this._focused = null;
+    if (this._selection) this._selection = new Set(included ? this._sessions.map(session => session.id) : []);
+    this._hidden = new Set(included || this._selection ? [] : this._sessions.map(session => session.id));
+    this._persist(); this._render(); void this.refresh();
   }
   _emit(name, detail) { this.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true })); }
   _fail(error) {
@@ -222,11 +378,85 @@ export class AgentGridElement extends ElementBase {
   _focus(id) { this._focused = id; this._render(); void this.refresh(); }
   _visibleSessions() {
     return mergeTileOrder(this._sessions.filter(session =>
+      (!this._selection || this._selection.has(session.id)) &&
       (this._showAll || ACTIVE_STATUSES.has(session.status)) &&
       (this._group === '*' || session.group === this._group) && !this._hidden.has(session.id)), this._orders[this._group] || []);
   }
+  _renderGrids() {
+    const grids = [{ id: 'all', name: 'All sessions', sessionIds: null }, ...this._grids.values()];
+    const signature = JSON.stringify(grids.map(grid => [grid.id, grid.name]));
+    if (signature !== this._gridOptionsSignature) {
+      this._gridOptionsSignature = signature;
+      this._gridSelect.replaceChildren(...grids.map(grid => {
+        const option = node('option', '', grid.name); option.value = grid.id; return option;
+      }));
+    }
+    this._gridSelect.value = this._activeGridId;
+    const known = new Set(grids.map(grid => grid.id));
+    for (const [id, entry] of this._gridButtons) if (!known.has(id)) { entry.root.remove(); this._gridButtons.delete(id); }
+    let previous = null;
+    for (const grid of grids) {
+      let entry = this._gridButtons.get(grid.id);
+      if (!entry) {
+        const root = button('', '', () => this.selectGrid(grid.id), 'grid-link');
+        root.dataset.gridId = grid.id;
+        const name = node('span', 'grid-name'); const count = node('span', 'grid-count');
+        root.append(name, count); entry = { root, name, count }; this._gridButtons.set(grid.id, entry);
+      }
+      entry.name.textContent = grid.name; entry.name.title = grid.name;
+      entry.count.textContent = String(grid.sessionIds ? grid.sessionIds.length : this._sessions.length);
+      entry.root.setAttribute('aria-label', grid.id === 'all' ? 'View all sessions' : `View saved grid ${grid.name}`);
+      entry.root.setAttribute('aria-pressed', String(grid.id === this._activeGridId));
+      if (previous) { if (previous.nextElementSibling !== entry.root) previous.after(entry.root); }
+      else if (this._gridList.firstElementChild !== entry.root) this._gridList.prepend(entry.root);
+      previous = entry.root;
+    }
+    this._deleteGridButton.hidden = this._activeGridId === 'all';
+  }
+  _renderSidebar(visibleIds = new Set(this._visibleSessions().map(session => session.id))) {
+    this._selectionCount.textContent = `${visibleIds.size} in grid`;
+    const query = this._search.trim().toLocaleLowerCase();
+    const validIds = new Set(this._sessions.map(session => session.id));
+    for (const [id, row] of this._sessionRows) if (!validIds.has(id)) { row.root.remove(); this._sessionRows.delete(id); }
+    let previous = null, matches = 0;
+    for (const session of [...this._sessions].sort((a, b) => (a.group || '').localeCompare(b.group || '') || a.title.localeCompare(b.title))) {
+      let row = this._sessionRows.get(session.id);
+      if (!row) {
+        const root = node('div', 'session-item'); root.dataset.catalogSessionId = session.id;
+        const label = node('label', 'session-choice');
+        const checkbox = node('input'); checkbox.type = 'checkbox';
+        checkbox.addEventListener('change', () => this._setSessionIncluded(session.id, checkbox.checked));
+        const text = node('span', 'session-info');
+        const title = node('span', 'session-title'); const identity = node('span', 'session-identity');
+        text.append(title, identity); label.append(checkbox, text);
+        const focus = button('↗', '', () => { this._setSessionIncluded(session.id, true); this._focus(session.id); }, 'session-focus');
+        root.append(label, focus); row = { root, checkbox, title, identity, focus }; this._sessionRows.set(session.id, row);
+      }
+      row.title.textContent = session.title; row.title.title = session.title;
+      row.identity.textContent = [session.group, session.tool, session.needsYou ? 'needs you' : session.status].filter(Boolean).join(' · ');
+      row.checkbox.checked = visibleIds.has(session.id);
+      row.checkbox.setAttribute('aria-label', `Show ${session.title} in this grid`);
+      row.focus.setAttribute('aria-label', `Focus session ${session.title}`); row.focus.title = `Focus ${session.title}`;
+      row.root.classList.toggle('included', row.checkbox.checked);
+      row.root.classList.toggle('attention', session.needsYou || ['waiting', 'error'].includes(session.status));
+      row.root.classList.toggle('in-focus', session.id === this._focused);
+      const searchText = [session.id, session.title, session.group, session.tool, session.status].filter(Boolean).join(' ').toLocaleLowerCase();
+      row.root.hidden = !!query && !searchText.includes(query);
+      if (!row.root.hidden) matches++;
+      if (previous) { if (previous.nextElementSibling !== row.root) previous.after(row.root); }
+      else if (this._sessionList.firstElementChild !== row.root) this._sessionList.prepend(row.root);
+      previous = row.root;
+    }
+    this._sidebarEmpty.hidden = matches > 0;
+    this._sidebarEmpty.textContent = query ? 'No matching sessions.' : this._loadState === 'loading' ? 'Loading sessions…' : this._loadState === 'error' ? 'Session list unavailable. Retry the connection.' : 'Your host has no sessions yet.';
+  }
   _render() {
     if (!this._ready) return;
+    this._sidebar.hidden = !this._sidebarOpen;
+    this._workbench.classList.toggle('with-sidebar', this._sidebarOpen);
+    this._sidebarToggle.setAttribute('aria-expanded', String(this._sidebarOpen));
+    this._sidebarToggle.setAttribute('aria-pressed', String(this._sidebarOpen));
+    this._renderGrids();
     const groups = [...new Set(this._sessions.map(session => session.group).filter(Boolean))].sort();
     if (this._loadState === 'connected' && this._group !== '*' && !groups.includes(this._group)) this._group = '*';
     const options = [node('option', '', `All workspaces (${this._sessions.length})`), ...groups.map(group => node('option', '', group))];
@@ -239,6 +469,7 @@ export class AgentGridElement extends ElementBase {
     const visible = this._visibleSessions();
     if (this._focused && !visible.some(session => session.id === this._focused)) this._focused = null;
     this._shown = this._focused ? visible.filter(session => session.id === this._focused) : visible;
+    this._renderSidebar(new Set(visible.map(session => session.id)));
     this._restoreFocus.hidden = !this._focused;
     this._restoreHidden.hidden = this._hidden.size === 0;
     this._restoreHidden.textContent = `Show hidden (${this._hidden.size})`;
@@ -251,7 +482,10 @@ export class AgentGridElement extends ElementBase {
     }
     const shownIds = new Set(this._shown.map(session => session.id));
     for (const [id, tile] of this._tiles) tile.root.hidden = !shownIds.has(id);
-    this._columns = this._focused ? 1 : tileColumns(this._shown.length, this._width || this.getBoundingClientRect().width);
+    const width = this._canvas.getBoundingClientRect().width || this.getBoundingClientRect().width;
+    this._columns = this._focused ? 1 : this._columnPreference ? Math.max(1, Math.min(this._columnPreference, this._shown.length, tileColumns(30, width))) : tileColumns(this._shown.length, width);
+    this._layoutSelect.value = String(this._columnPreference);
+    this._layoutSelect.disabled = !!this._focused;
     this._rows = Math.max(1, Math.ceil(this._shown.length / this._columns));
     this._layoutKey = layoutKey(this._group, this._shown.map(session => session.id), this._columns);
     const saved = this._layouts[this._layoutKey];
@@ -281,8 +515,12 @@ export class AgentGridElement extends ElementBase {
       this._empty.replaceChildren();
       const loading = this._loadState === 'loading';
       const title = loading ? (this._adapter ? 'Connecting to your agents…' : 'Connect a host adapter') : this._loadState === 'error' ? 'Connection unavailable' : this._sessions.length ? 'No sessions in this view' : 'Your grid is ready';
-      this._empty.append(node('strong', '', title), node('span', '', loading ? 'The host supplies sessions and permissions.' : 'Start agents in your host app, then return here.'));
-      if (this._sessions.length) this._empty.append(button('Show everything', 'Show all sessions and restore hidden panes', () => {
+      const named = this._activeGridId !== 'all';
+      this._empty.append(node('strong', '', !loading && this._loadState !== 'error' && named ? 'No sessions in this grid' : title), node('span', '', loading ? 'The host supplies sessions and permissions.' : named ? 'Choose sessions in the sidebar, or switch to another grid.' : 'Start agents in your host app, then return here.'));
+      if (named) this._empty.append(button('Choose sessions', 'Choose sessions for this grid', () => {
+        this._sidebarOpen = true; this._persist(); this._render(); this._sessionSearch.focus();
+      }));
+      else if (this._sessions.length) this._empty.append(button('Show everything', 'Show all sessions and restore hidden panes', () => {
         this._group = '*'; this._showAll = true; this._hidden.clear(); this._persist(); this._render(); void this.refresh();
       }));
     }

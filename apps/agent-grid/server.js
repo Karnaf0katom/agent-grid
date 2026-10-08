@@ -15,7 +15,7 @@ const staticFiles = new Map([
   ['/', [new URL('index.html', PUBLIC), 'text/html; charset=utf-8']],
   ['/main.js', [new URL('main.js', PUBLIC), 'text/javascript; charset=utf-8']],
   ['/app.css', [new URL('app.css', PUBLIC), 'text/css; charset=utf-8']],
-  ...['index.js', 'adapters.js', 'layout.js', 'element.js', 'styles.js'].map(name => [`/sdk/${name}`, [new URL(name, SDK), 'text/javascript; charset=utf-8']]),
+  ...['index.js', 'adapters.js', 'layout.js', 'views.js', 'element.js', 'styles.js'].map(name => [`/sdk/${name}`, [new URL(name, SDK), 'text/javascript; charset=utf-8']]),
 ]);
 
 function readJson(request) {
@@ -60,7 +60,7 @@ export function createGridServer({ mode = 'demo', readOnly = mode !== 'demo', ad
       const url = new URL(request.url, `http://127.0.0.1:${port}`);
       if (url.pathname.startsWith('/api/') && request.headers['sec-fetch-site'] === 'cross-site') throw new AdapterError('Cross-site access is disabled.', 403);
       if (request.method === 'GET' && url.pathname === '/api/config') {
-        return json(response, 200, { mode, readOnly, output: 'snapshot', version: '0.1.0' });
+        return json(response, 200, { mode, readOnly, output: 'snapshot', version: '0.2.0' });
       }
       if (request.method === 'GET' && url.pathname === '/api/sessions') {
         const sessions = normalizeSessions(await host.listSessions());

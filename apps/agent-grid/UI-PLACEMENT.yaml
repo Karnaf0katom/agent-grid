@@ -7,9 +7,14 @@ surfaces:
   - name: grid
     route: /
     template: split-live
-    primitives: [toolbar, button, select, status, session-tile, composer, separator, alert, empty-state]
+    primitives: [toolbar, button, select, status, session-tile, composer, separator, alert, empty-state, session-sidebar, search, checkbox, grid-switcher, layout-selector]
     implementation: Browser-native components with scoped CSS; distributable without private platform dependencies
     reads: [GET /api/config, GET /api/sessions, GET /api/sessions/:id/output]
     writes: [POST /api/sessions/:id/input, POST /api/sessions/:id/actions]
     states: [loading, empty, error, connected, read-only]
     theme: Host-overridable CSS custom properties with a dark terminal default
+    presentation:
+      - Collapsible sidebar lists every host session, with search and explicit inclusion controls
+      - Named grids save their session selection, filters, order, and pane sizes independently
+      - Top toolbar switches grids, chooses column count, and enters or exits fullscreen
+      - Grid selection and layout are local presentation state; host session permissions still apply

@@ -91,6 +91,78 @@ try {
   await grid.getByRole('button', { name: 'Include idle and stopped sessions', exact: true }).click();
   await waitCount(5);
   await grid.getByRole('button', { name: 'Reset pane order and sizes for this workspace', exact: true }).click();
+
+  // The catalog searches every host session without filtering the current canvas.
+  const catalog = grid.locator('.session-list');
+  const search = grid.getByRole('searchbox', { name: 'Search sessions' });
+  const inventoryChoice = grid.getByRole('checkbox', { name: 'Show Build the inventory view in this grid', exact: true });
+  const changelogChoice = grid.getByRole('checkbox', { name: 'Show Draft API changelog in this grid', exact: true });
+  assert.equal(await catalog.locator('.session-item:visible').count(), 6);
+  await search.fill('commerce');
+  assert.equal(await catalog.locator('.session-item:visible').count(), 2);
+  assert.equal((await ids()).length, 5);
+  await search.fill('no matching session');
+  assert.equal(await catalog.locator('.session-item:visible').count(), 0);
+  assert.match(await grid.locator('.sidebar-empty').textContent(), /No matching sessions/);
+  await search.fill('');
+  await input.fill('Draft survives grid selection.');
+  await inventoryChoice.uncheck(); await waitCount(4);
+  await inventoryChoice.check(); await waitCount(5);
+  assert.equal(await input.inputValue(), 'Draft survives grid selection.');
+  await changelogChoice.check(); await waitCount(6);
+  await grid.getByRole('button', { name: 'Include idle and stopped sessions', exact: true }).click();
+  await waitCount(5);
+  const saveNamed = async name => {
+    await grid.getByRole('button', { name: 'Save current sessions as a named grid', exact: true }).click();
+    await grid.getByRole('textbox', { name: 'New grid name' }).fill(name);
+    await grid.getByRole('button', { name: 'Save', exact: true }).click();
+  };
+  const gridPicker = grid.getByRole('combobox', { name: 'Choose saved grid' });
+  const columns = grid.getByRole('combobox', { name: 'Grid columns' });
+  await grid.getByRole('combobox', { name: 'Filter workspace' }).selectOption('commerce');
+  await waitCount(2);
+  await grid.locator('[data-session-id="inventory"] .grip').focus();
+  await page.keyboard.press('ArrowLeft');
+  const commerceOrder = await ids();
+  const commerceDivider = grid.getByRole('separator', { name: 'Resize columns 1 and 2' });
+  await commerceDivider.focus(); await page.keyboard.press('ArrowRight');
+  const commerceSize = await commerceDivider.getAttribute('aria-valuenow');
+  await saveNamed('Commerce');
+  assert.deepEqual(await ids(), commerceOrder);
+  assert.equal(await commerceDivider.getAttribute('aria-valuenow'), commerceSize);
+  await columns.selectOption('1');
+  await saveNamed('Review');
+  await inventoryChoice.uncheck(); await waitCount(1);
+  await columns.selectOption('4');
+  await grid.getByRole('button', { name: 'View saved grid Commerce', exact: true }).click();
+  await waitCount(2);
+  assert.equal(await columns.inputValue(), '1');
+  assert.equal(await input.inputValue(), 'Draft survives grid selection.');
+  await gridPicker.selectOption('all'); await waitCount(2);
+  assert.equal(await grid.getByRole('combobox', { name: 'Filter workspace' }).inputValue(), 'commerce');
+  assert.equal(await columns.inputValue(), '0');
+  await grid.getByRole('combobox', { name: 'Filter workspace' }).selectOption('*');
+  await waitCount(5);
+  await gridPicker.selectOption({ label: 'Review' }); await waitCount(1);
+  await page.reload(); await waitCount(1);
+  assert.equal(await columns.inputValue(), '4');
+  assert.equal(await page.evaluate(() => document.querySelector('agent-grid')._columns), 1);
+  assert.equal(await grid.locator('.grid-link[aria-pressed=true]').textContent(), 'Review1');
+  page.once('dialog', dialog => dialog.accept());
+  await grid.getByRole('button', { name: 'Delete this saved grid', exact: true }).click();
+  await waitCount(5);
+  assert.equal(await grid.getByRole('button', { name: 'View saved grid Review', exact: true }).count(), 0);
+  await grid.getByRole('button', { name: 'Toggle session sidebar', exact: true }).click();
+  assert.equal(await grid.locator('.sidebar').isVisible(), false);
+  await page.reload(); await waitCount(5);
+  assert.equal(await grid.locator('.sidebar').isVisible(), false);
+  await grid.getByRole('button', { name: 'Toggle session sidebar', exact: true }).click();
+  if (await page.evaluate(() => document.fullscreenEnabled)) {
+    await grid.getByRole('button', { name: 'Enter fullscreen grid', exact: true }).click();
+    await page.waitForFunction(() => document.fullscreenElement === document.querySelector('agent-grid'));
+    await grid.getByRole('button', { name: 'Exit fullscreen grid', exact: true }).click();
+    await page.waitForFunction(() => !document.fullscreenElement);
+  }
   await checkPaneControls();
   await mkdir('artifacts', { recursive: true });
   await page.screenshot({ path: 'artifacts/agent-grid-desktop.png', fullPage: true });
@@ -127,8 +199,46 @@ try {
   assert.equal(await custom.locator('.tile').count(), 0);
   await page.evaluate(() => window.rendererHandle.destroy());
   assert.deepEqual(await page.evaluate(() => window.rendererCounts), { mounted: 1, cleaned: 1 });
+
+  // Switching saved grids preserves mounted host renderers; missing sessions may return.
+  await page.evaluate(async () => {
+    const { mountAgentGrid } = await import('/sdk/element.js');
+    window.viewRendererCounts = { mounted: 0, cleaned: 0 };
+    window.viewRows = [
+      { id: 'a', title: 'Alpha', status: 'running' },
+      { id: 'b', title: 'Beta', status: 'idle' },
+      { id: 'c', title: 'Gamma', status: 'running' },
+    ];
+    window.viewHandle = mountAgentGrid(document.body, { storageKey: 'view-renderer-test', adapter: {
+      listSessions: async () => window.viewRows,
+      mountSession(container, session) {
+        window.viewRendererCounts.mounted++;
+        container.textContent = `Host renderer for ${session.title}`;
+        return () => { window.viewRendererCounts.cleaned++; };
+      },
+    } });
+  });
+  await page.waitForFunction(() => window.viewRendererCounts.mounted === 2);
+  await page.evaluate(() => { window.pairGrid = window.viewHandle.element.saveGrid('Pair', ['a', 'b']); });
+  await page.waitForFunction(() => window.viewRendererCounts.mounted === 3);
+  await page.evaluate(() => { window.viewHandle.element.selectGrid('all'); window.viewHandle.element.selectGrid(window.pairGrid); });
+  assert.deepEqual(await page.evaluate(() => window.viewRendererCounts), { mounted: 3, cleaned: 0 });
+  await page.evaluate(async () => { window.viewRows = window.viewRows.filter(row => row.id !== 'b'); await window.viewHandle.element.refresh(); });
+  await page.waitForFunction(() => window.viewRendererCounts.cleaned === 1);
+  assert.deepEqual(await page.evaluate(() => window.viewHandle.element.savedGrids[0].sessionIds), ['a', 'b']);
+  await page.evaluate(async () => { window.viewRows.push({ id: 'b', title: 'Beta', status: 'idle' }); await window.viewHandle.element.refresh(); });
+  await page.waitForFunction(() => window.viewRendererCounts.mounted === 4);
+  const viewGrid = page.locator('agent-grid').last();
+  assert.equal(await viewGrid.locator('.tile:visible').count(), 2);
+  await viewGrid.getByRole('button', { name: 'Remove all sessions from this grid', exact: true }).click();
+  await viewGrid.locator('.state').filter({ hasText: 'No sessions in this grid' }).waitFor();
+  assert.equal(await viewGrid.getByRole('button', { name: 'Restore hidden sessions', exact: true }).isVisible(), false);
+  await viewGrid.getByRole('checkbox', { name: 'Show Beta in this grid', exact: true }).check();
+  assert.equal(await viewGrid.locator('.tile:visible').count(), 1);
+  await page.evaluate(() => window.viewHandle.destroy());
+  assert.deepEqual(await page.evaluate(() => window.viewRendererCounts), { mounted: 4, cleaned: 4 });
   assert.deepEqual(errors, []);
-  console.log('PASS: browser layout, focus, drafts, hide/restore, pointer/keyboard ordering and resize/persistence, input isolation, read-only, mobile, escaping, connection recovery, empty state, and renderer cleanup.');
+  console.log('PASS: browser layout, focus, drafts, hide/restore, pointer/keyboard ordering and resize/persistence, input isolation, read-only, session catalog/search/selection, independent saved grids, fullscreen, mobile, escaping, connection recovery, empty state, returning sessions, and renderer cleanup.');
 } finally {
   await browser.close();
   server.closeAllConnections();

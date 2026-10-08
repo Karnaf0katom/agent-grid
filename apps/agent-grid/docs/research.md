@@ -16,9 +16,15 @@ Primary source: [BridgeSpace 3.0.74 release notes](https://www.bridgemind.ai/cha
 
 Decision: limit concurrent snapshot reads, keep output nodes stable, preserve user drafts, decode process output across chunk boundaries, and let the host own streaming and recovery.
 
+Primary source: [BridgeSpace 3.1.7 release notes](https://www.bridgemind.ai/changelog/bridgespace/v3-1-7), checked 2026-10-08. It explicitly describes Rust terminal flushing and Tauri channel recovery. This confirms those backend technologies; it does not establish what percentage of the application is Rust.
+
+Decision for v0.2: add the owner's requested all-session sidebar, explicit session selection, named saved grids, and top layout controls to the existing SDK. Keep native runtime and IPC ownership in the host adapter. Each saved grid owns its presentation state, and switching views preserves existing renderers and drafts.
+
 ## YouTube review status
 
 The requested footage review is tracked separately from the verified documentation findings. Selected sources are [this BridgeMind demo](https://www.youtube.com/watch?v=K-AzrvFeNTQ) and the [officially linked recent stream](https://www.youtube.com/watch?v=EvCMaE94p1g). YouTube page retrieval was unavailable. The existing video watcher failed at its downloader; an available downloader then reached YouTube's sign-in/bot challenge. No video-specific observations or claims are asserted here. Revisit footage analysis when an accessible source or authorized access is available.
+
+A short owner-supplied clip is now available for follow-up review. The v0.2 interactions follow the owner's description and the primary sources above; footage-specific observations remain unverified.
 
 ## CCC evidence
 

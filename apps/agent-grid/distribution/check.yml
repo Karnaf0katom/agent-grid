@@ -44,7 +44,7 @@ jobs:
         run: |
           npm run pack:sdk
           mkdir artifacts/sdk-check
-          tar -xzf artifacts/karnafkatom-agent-grid-0.1.0.tgz -C artifacts/sdk-check
+          tar -xzf artifacts/karnafkatom-agent-grid-0.2.0.tgz -C artifacts/sdk-check
           node --input-type=module -e "const sdk = await import('./artifacts/sdk-check/package/src/index.js'); if (typeof sdk.createHttpAdapter !== 'function') process.exit(1); await import('./artifacts/sdk-check/package/src/element.js');"
           test -f artifacts/sdk-check/package/LICENSE
           test -f artifacts/sdk-check/package/NOTICE
@@ -56,5 +56,5 @@ jobs:
           path: |
             artifacts/agent-grid-desktop.png
             artifacts/agent-grid-mobile.png
-            artifacts/karnafkatom-agent-grid-0.1.0.tgz
+            artifacts/karnafkatom-agent-grid-0.2.0.tgz
           retention-days: 14
